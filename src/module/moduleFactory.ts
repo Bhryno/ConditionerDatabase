@@ -7,6 +7,8 @@ import Delete from "./impl/delete"
 import Get from "./impl/get"
 import Has from "./impl/has"
 import Push from "./impl/push"
+import Set from "./impl/set"
+import Subtract from "./impl/subtract"
 
 const safeEcho = false
 
@@ -17,7 +19,9 @@ const modules = {
     Delete,
     Get,
     Has,
-    Push
+    Push,
+    Set,
+    Subtract
 }
 
 export type ModuleOptions = {
