@@ -9,6 +9,7 @@ import Has from "./impl/has"
 import Push from "./impl/push"
 import Set from "./impl/set"
 import Subtract from "./impl/subtract"
+import Type from "./impl/type"
 
 const safeEcho = false
 
@@ -21,7 +22,8 @@ const modules = {
     Has,
     Push,
     Set,
-    Subtract
+    Subtract,
+    Type
 }
 
 export type ModuleOptions = {
