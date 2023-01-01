@@ -2,12 +2,14 @@ import { Database } from "better-sqlite3"
 
 import add from "./impl/add"
 import all from "./impl/all"
+import clear from "./impl/clear"
 
 const safeEcho = false
 
 const modules = {
     add,
-    all
+    all,
+    clear
 }
 
 export type ModuleOptions = {
