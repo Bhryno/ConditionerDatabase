@@ -62,3 +62,111 @@ export function arbitrate(database: Database, module: keyof typeof modules, _par
     return modules[module](database, parameters, table)
 
 }
+
+export function getSafe(object: any, path: string): undefined | any {
+
+    if (safeEcho) {
+
+        console.log(`<GET SAFE> :: IN:`, object, `, PATH:`, path)
+
+    }
+
+    let parent = object
+
+    for (let subPath of path.split(".")) {
+
+        if (!parent[subPath]) {
+
+            return undefined
+
+        }
+
+        parent = parent[subPath]
+
+    }
+
+    if (safeEcho) {
+
+        console.log(`<GET SAFE RETURN> :: IN:`, object, `, PATH:`, path, `, VALUE:`, parent)
+
+    }
+
+    return parent
+
+}
+
+export function setSafe(object: any, path: string, value: any) {
+
+    if (safeEcho) {
+
+        console.log(`<SET SAFE> :: IN:`, object, `, PATH:`, path, `, VALUE:`, value)
+
+    }
+
+    let parent = object
+    const splits = path.split(".")
+
+    for (let i = 0; i < splits.length; i++) {
+
+        let subPath = splits[i]
+
+        if (parent[subPath] === undefined) {
+
+            parent[subPath] = {}
+
+        }
+
+        if (i === splits.length - 1) {
+
+            parent[subPath] = value
+
+        }
+        else {
+
+            parent = parent[subPath]
+
+        }
+
+    }
+
+    return object
+
+}
+
+export function deleteSafe(object: any, path: string): object {
+    
+    if (safeEcho) {
+
+        console.log(`<DELETE SAFE> :: IN:`, object, `, PATH:`, path)
+
+    }
+
+    let parent = object
+    const splits = path.split(".")
+
+    for (let i = 0; i < splits.length; i++) {
+        
+        let subPath = splits[i]
+
+        if (parent[subPath] === undefined) {
+
+            parent[subPath] = {}
+
+        }
+
+        if (i === splits.length - 1) {
+
+            delete parent[subPath]
+
+        }
+        else {
+
+            parent = parent[subPath]
+
+        }
+
+    }
+
+    return object
+
+}
