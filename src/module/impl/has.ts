@@ -1,12 +1,11 @@
 import { Database } from "better-sqlite3"
-import { createTrue } from "typescript"
 import { getSafe, ModuleParameters } from "../moduleFactory"
 
-export default function Get(database: Database, parameters: ModuleParameters, table: string): any | null {
+export default function Has(database: Database, parameters: ModuleParameters, table: string) : boolean {
     let currentValue = database.prepare(`SELECT * FROM ${table} WHERE ID = (?)`).get(parameters.id)
 
     if (currentValue === undefined) {
-        return null
+        return false
     }
 
     currentValue = JSON.parse(currentValue.json)
@@ -15,5 +14,5 @@ export default function Get(database: Database, parameters: ModuleParameters, ta
         currentValue = getSafe(currentValue, parameters.options.target)
     }
 
-    return currentValue
+    return currentValue !== undefined
 }
