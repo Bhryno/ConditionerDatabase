@@ -1,9 +1,11 @@
 import { Database } from "better-sqlite3"
 
+import all from "./impl/all"
+
 const safeEcho = false
 
 const modules = {
-    
+    all
 }
 
 export type ModuleOptions = {
@@ -168,5 +170,43 @@ export function deleteSafe(object: any, path: string): object {
     }
 
     return object
+
+}
+
+export function getValue(database: Database, parameters: ModuleParameters, table: string) {
+
+    let currentValue = database.prepare(`SELECT * FROM ${table} WHERE ID = (?)`).get(parameters.id)
+
+    if (currentValue === undefined) {
+
+        database.prepare(`INSERT INTO ${table} (ID, JSON) VALUES (?, ?)`).run(parameters.id, "{}")
+
+    }
+
+    return currentValue
+
+}
+
+export function setValue(database: Database, parameters: ModuleParameters, table: string) {
+    
+    database.prepare(`UPDATE ${table} SET json = (?) WHERE ID = (?)`).run(parameters.data, parameters.id)
+
+    let newValue = database.prepare(`SELECT * FROM ${table} WHERE ID  = (?)`).get(parameters.id).json
+
+    if (newValue === "{}") {
+
+        return null
+
+    }
+
+    newValue = JSON.parse(newValue)
+
+    if (parameters .options.target && parameters.options.subKeys !== false) {
+
+        return getSafe(newValue, parameters.options.target)
+
+    }
+
+    return newValue
 
 }
