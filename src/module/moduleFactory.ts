@@ -1,15 +1,17 @@
 import { Database } from "better-sqlite3"
 
-import add from "./impl/add"
-import all from "./impl/all"
-import clear from "./impl/clear"
+import Add from "./impl/add"
+import All from "./impl/all"
+import Clear from "./impl/clear"
+import Delete from "./impl/delete"
 
 const safeEcho = false
 
 const modules = {
-    add,
-    all,
-    clear
+    Add,
+    All,
+    Clear,
+    Delete
 }
 
 export type ModuleOptions = {

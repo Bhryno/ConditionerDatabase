@@ -1,7 +1,7 @@
 import { Database } from "better-sqlite3"
 import { getSafe, getValue, setSafe, setValue, ModuleParameters } from "../moduleFactory"
 
-export default function add(database: Database, parameters: ModuleParameters, table: string): number | null {
+export default function Add(database: Database, parameters: ModuleParameters, table: string): number | null {
     let currentValue = getValue(database, parameters, table)
 
     if (parameters.options.target && parameters.options.subKeys !== false) {
