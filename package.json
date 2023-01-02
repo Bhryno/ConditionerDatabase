@@ -2,12 +2,20 @@
   "name": "conditioner-database",
   "version": "1.0.0",
   "description": "A custom database tool for all my web projects",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsc-watch -p . --onSuccess \"nodemon test.js\"",
+    "build": "tsc -p .",
+    "test-js": "node test.js",
+    "test-ts": "node --require esbuild-register test.ts"
+  },
   "author": "Bryan Lee<HairConditioner@github.io>",
   "license": "MIT",
   "dependencies": {
+    "better-sqlite3": "^8.0.1"
+  },
+  "devDependencies": {
     "@types/better-sqlite3": "^7.6.3",
-    "better-sqlite3": "^8.0.1",
     "esbuild": "^0.16.12",
     "esbuild-register": "^3.4.2",
     "typescript": "^4.9.4"
