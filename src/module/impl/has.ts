@@ -1,8 +1,14 @@
-import { Database } from "better-sqlite3"
-import { getSafe, ModuleParameters } from "../moduleFactory"
+import { Database } from 'better-sqlite3'
+import { getSafe, ModuleParameters } from '../moduleFactory'
 
-export default function Has(database: Database, parameters: ModuleParameters, table: string) : boolean {
-    let currentValue = database.prepare(`SELECT * FROM ${table} WHERE ID = (?)`).get(parameters.id)
+export default function Has(
+    database: Database,
+    parameters: ModuleParameters,
+    table: string
+): boolean {
+    let currentValue = database
+        .prepare(`SELECT * FROM ${table} WHERE ID = (?)`)
+        .get(parameters.id)
 
     if (currentValue === undefined) {
         return false

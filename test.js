@@ -1,7 +1,7 @@
 console.clear()
 
-const databaseImpl = require(".")
-const { Database } = require("./dist/index")
+const databaseImpl = require('.')
+const { Database } = require('./dist/index')
 
 let cache = []
 
@@ -24,7 +24,11 @@ function test(name, testFN, result) {
     cache.pop()
 
     if (fnResult !== result) {
-        cache.push(`Test '${name}' has failed. ${fnResult} !== ${result} [Duration: ${endTime - startTime} ns]`)
+        cache.push(
+            `Test '${name}' has failed. ${fnResult} !== ${result} [Duration: ${
+                endTime - startTime
+            } ns]`
+        )
         updateStdout()
         process.exit(1)
     }
@@ -40,20 +44,31 @@ function runTests(database) {
     database.clear()
 
     /* Global Settings */
-    test("Setting", () => database.set("set_me", 10) === 10 && database.get("set_me") === 10, true)
+    test(
+        'Setting',
+        () =>
+            database.set('set_me', 10) === 10 && database.get('set_me') === 10,
+        true
+    )
     /* Global Key Mappings */
-    test("Setting Keys", () => database.set("set_keys.sub.keys", 10) === 10 && database.get("set_keys.sub.keys") === 10, true)
+    test(
+        'Setting Keys',
+        () =>
+            database.set('set_keys.sub.keys', 10) === 10 &&
+            database.get('set_keys.sub.keys') === 10,
+        true
+    )
     /* Addition (Unit-test checks if 20 + 10 = 30) */
-    database.set("add_me", 20)
-    test("Addition", () => database.add("add_me", 10), 30)
+    database.set('add_me', 20)
+    test('Addition', () => database.add('add_me', 10), 30)
     /* Subtraction (Unit-test checks if 20 - 10 = 10) */
-    database.set("reduce_me", 20)
-    test("Subtraction", () => database.subtract("reduce_me", 10), 10)
+    database.set('reduce_me', 20)
+    test('Subtraction', () => database.subtract('reduce_me', 10), 10)
     /* Non-operator/Miscellanious flag check (Unit-test checks if the item that exists does in fact exist) */
-    database.set("i_exist", true)
-    test("Item Exists", () => database.has("i_exist"), true)
+    database.set('i_exist', true)
+    test('Item Exists', () => database.has('i_exist'), true)
 }
 
 /* Run tests */
-cache.push("\n [ ## STARTING DATABASE TESTS ## ]")
+cache.push('\n [ ## STARTING DATABASE TESTS ## ]')
 runTests(databaseImpl())

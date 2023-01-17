@@ -1,18 +1,19 @@
-import { Database } from "better-sqlite3"
+import { Database } from 'better-sqlite3'
 
-import Add from "./impl/add"
-import All from "./impl/all"
-import Clear from "./impl/clear"
-import Delete from "./impl/delete"
-import Get from "./impl/get"
-import Has from "./impl/has"
-import Push from "./impl/push"
-import Set from "./impl/set"
-import Subtract from "./impl/subtract"
-import Type from "./impl/type"
+import Add from './impl/add'
+import All from './impl/all'
+import Clear from './impl/clear'
+import Delete from './impl/delete'
+import Get from './impl/get'
+import Has from './impl/has'
+import Push from './impl/push'
+import Set from './impl/set'
+import Subtract from './impl/subtract'
+import Type from './impl/type'
 
 const safeEcho = false
 
+/* Register Modules */
 const modules = {
     Add,
     All,
@@ -27,43 +28,60 @@ const modules = {
 }
 
 export type ModuleOptions = {
-    table?: string,
-    target?: string,
+    table?: string
+    target?: string
     subKeys?: boolean
 }
 
 type ArbitrateModuleParameters = {
-    id?: string,
-    options?: ModuleOptions,
+    id?: string
+    options?: ModuleOptions
     data?: any
 }
 
 export type ModuleParameters = {
-    id?: string,
-    options: ModuleOptions,
+    id?: string
+    options: ModuleOptions
     data?: any
 }
 
-export function arbitrate(database: Database, module: keyof typeof modules, _parameters: ArbitrateModuleParameters, table?: string): any {
+export function arbitrate(
+    database: Database,
+    module: keyof typeof modules,
+    _parameters: ArbitrateModuleParameters,
+    table?: string
+): any {
     let parameters: ModuleParameters = { ...(_parameters || {}), options: {} }
 
-    table = table || parameters.options?.table || "json"
+    table = table || parameters.options?.table || 'json'
 
-    database.prepare(`CREATE TABLE IF NOT EXISTS ${table} (ID TEXT, json TEXT)`).run()
+    database
+        .prepare(`CREATE TABLE IF NOT EXISTS ${table} (ID TEXT, json TEXT)`)
+        .run()
 
-    if (parameters.options.target && parameters.options.target.includes(".") && parameters.options.subKeys !== false) {
+    if (
+        parameters.options.target &&
+        parameters.options.target.includes('.') &&
+        parameters.options.subKeys !== false
+    ) {
         parameters.options.target = parameters.options.target.slice(1)
     }
 
     if (parameters.data && parameters.data === Infinity) {
-        throw new TypeError(`Cannot set value to infinity -> [${table}/${parameters.id}]`)
+        throw new TypeError(
+            `Cannot set value to infinity -> [${table}/${parameters.id}]`
+        )
     }
 
-    if (parameters.id && parameters.id.includes(".") && parameters.options.subKeys !== false) {
-        let split = parameters.id.split(".")
+    if (
+        parameters.id &&
+        parameters.id.includes('.') &&
+        parameters.options.subKeys !== false
+    ) {
+        let split = parameters.id.split('.')
 
         parameters.id = split.shift()
-        parameters.options.target = split.join(".")
+        parameters.options.target = split.join('.')
     }
 
     return modules[module](database, parameters, table)
@@ -76,7 +94,7 @@ export function getSafe(object: any, path: string): undefined | any {
 
     let parent = object
 
-    for (let subPath of path.split(".")) {
+    for (let subPath of path.split('.')) {
         if (!parent[subPath]) {
             return undefined
         }
@@ -84,7 +102,14 @@ export function getSafe(object: any, path: string): undefined | any {
     }
 
     if (safeEcho) {
-        console.log(`<GET SAFE RETURN> :: IN:`, object, `, PATH:`, path, `, VALUE:`, parent)
+        console.log(
+            `<GET SAFE RETURN> :: IN:`,
+            object,
+            `, PATH:`,
+            path,
+            `, VALUE:`,
+            parent
+        )
     }
 
     return parent
@@ -92,11 +117,18 @@ export function getSafe(object: any, path: string): undefined | any {
 
 export function setSafe(object: any, path: string, value: any) {
     if (safeEcho) {
-        console.log(`<SET SAFE> :: IN:`, object, `, PATH:`, path, `, VALUE:`, value)
+        console.log(
+            `<SET SAFE> :: IN:`,
+            object,
+            `, PATH:`,
+            path,
+            `, VALUE:`,
+            value
+        )
     }
 
     let parent = object
-    const splits = path.split(".")
+    const splits = path.split('.')
 
     for (let i = 0; i < splits.length; i++) {
         let subPath = splits[i]
@@ -110,7 +142,6 @@ export function setSafe(object: any, path: string, value: any) {
         } else {
             parent = parent[subPath]
         }
-
     }
 
     return object
@@ -122,7 +153,7 @@ export function deleteSafe(object: any, path: string): object {
     }
 
     let parent = object
-    const splits = path.split(".")
+    const splits = path.split('.')
 
     for (let i = 0; i < splits.length; i++) {
         let subPath = splits[i]
@@ -141,22 +172,38 @@ export function deleteSafe(object: any, path: string): object {
     return object
 }
 
-export function getValue(database: Database, parameters: ModuleParameters, table: string) {
-    let currentValue = database.prepare(`SELECT * FROM ${table} WHERE ID = (?)`).get(parameters.id)
+export function getValue(
+    database: Database,
+    parameters: ModuleParameters,
+    table: string
+) {
+    let currentValue = database
+        .prepare(`SELECT * FROM ${table} WHERE ID = (?)`)
+        .get(parameters.id)
 
     if (currentValue === undefined) {
-        database.prepare(`INSERT INTO ${table} (ID, JSON) VALUES (?, ?)`).run(parameters.id, "{}")
+        database
+            .prepare(`INSERT INTO ${table} (ID, JSON) VALUES (?, ?)`)
+            .run(parameters.id, '{}')
     }
 
     return currentValue
 }
 
-export function setValue(database: Database, parameters: ModuleParameters, table: string) {
-    database.prepare(`UPDATE ${table} SET json = (?) WHERE ID = (?)`).run(parameters.data, parameters.id)
+export function setValue(
+    database: Database,
+    parameters: ModuleParameters,
+    table: string
+) {
+    database
+        .prepare(`UPDATE ${table} SET json = (?) WHERE ID = (?)`)
+        .run(parameters.data, parameters.id)
 
-    let newValue = database.prepare(`SELECT * FROM ${table} WHERE ID  = (?)`).get(parameters.id).json
+    let newValue = database
+        .prepare(`SELECT * FROM ${table} WHERE ID  = (?)`)
+        .get(parameters.id).json
 
-    if (newValue === "{}") {
+    if (newValue === '{}') {
         return null
     }
 
